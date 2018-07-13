@@ -32,22 +32,6 @@ jobs:
             - docker-cache
             - VERSION
 
-  deploy_gke_to_staging:
-    docker:
-      - image: ${REGISTRY_ENDPOINT}/circleci-alpine:2.9.6
-        auth:
-          username: _json_key
-          password: $GCLOUD_AUTH_JSON
-
-    working_directory: /usr/local/src/openvas-docker
-
-    steps:
-      - checkout
-      - setup_remote_docker
-
-      - restore_cache:
-          key: built-containers-{{ .Environment.CIRCLE_SHA1 }}
-
       - run:
           name: Restore docker cache
           command: docker load < docker-cache/built-image.tar
@@ -72,8 +56,4 @@ workflows:
     jobs:
       - build_docker:
          context: org-shared-services
-      - deploy_gke_to_staging:
-         context: org-shared-services
-         requires:
-          - build_docker
 
